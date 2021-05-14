@@ -36,3 +36,29 @@ def randomize_rows(img: np.ndarray, times: int = 1) -> np.ndarray:
     rng = np.random.default_rng()
     rng.shuffle(img)
     return img
+
+
+def melt(img: np.ndarray, sorted: bool = False) -> np.ndarray:
+    """
+    Accepts a numpy array representing an image and "melts" the image into
+    groupings of similar pixels. If 'sorted' is set to True, the colors will
+    be sorted by their RGB values in ascending order.
+    """
+    pixel_dict = {}
+    for pixel in img.reshape(-1, 3):
+        pix_tup = tuple(pixel)
+        try:
+            pixel_dict[pix_tup] = pixel_dict[pix_tup] + 1
+        except KeyError:
+            pixel_dict[pix_tup] = 1
+
+    pixels = list(pixel_dict.keys())
+    if sorted:
+        pixels.sort()
+    new_img = []
+    for pixel in pixels:
+        tmp_list = []
+        for _ in range(0, pixel_dict[pixel]):
+            tmp_list.append(np.asarray(pixel))
+        new_img += tmp_list
+    return np.asarray(new_img).reshape(-1, img.shape[1], 3)
